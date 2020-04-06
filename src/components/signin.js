@@ -1,67 +1,69 @@
-import React, { Component } from "react"
-import { Link } from "gatsby"
+import React, { useContext, useState } from "react"
+import { Link, navigate } from "gatsby"
 import { userRegistration } from "../api"
 
+import { strapiLogin } from "../lib/auth"
+
 import Form from "./styles/Form"
+import Axios from "axios"
 
-class Signin extends Component {
-  state = { email: "", password: "", username: "" }
+import { GlobalDispatchContext } from "../context/GlobalContextProvider"
+import { USER_LOGIN } from "../context/actions"
 
-  handleChange = e => {
-    this.setState({ [e.target.name]: e.target.value })
-  }
+const SignIn = () => {
+  
+const [email, setEmail] = useState('');
+const [password, setPassword] = useState('');
+const dispatch = useContext(GlobalDispatchContext);
 
-  handleSubmit = e => {
+  
+  const handleSubmit = (e) => {
     e.preventDefault()
-    userRegistration({
-      username: this.state.username,
-      email: this.state.email,
-      password: this.state.password,
+    strapiLogin({
+      email,
+      password
+    }).then(res => {
+      console.log(res)
+      
+      dispatch({ type: USER_LOGIN, payload: res.user.username })
+      navigate("/")
     })
   }
-  render() {
-    return (
-      <Form method="post" onSubmit={e => this.handleSubmit(e)}>
-        <h2>Login to an exising account</h2>
-        <fieldset>
-          
+  return (
+    <Form method="post" onSubmit={e => handleSubmit(e)}>
+      <h2>Login to an exising account</h2>
+      <fieldset>
+        <label htmlFor="email">
+          <input
+            name="email"
+            type="text"
+            id="email"
+            value={email}
+            placeholder="Please enter your email"
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </label>
 
-          <label htmlFor="username">
-            <input
-              name="username"
-              type="text"
-              id="username"
-              value={this.state.username}
-              placeholder="Please enter your email"
-              onChange={this.handleChange}
-            />
-          </label>
+        <label htmlFor="password">
+          <input
+            name="password"
+            type="password"
+            id="password"
+            value={password}
+            placeholder="Please enter your password"
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </label>
+        <div className="links-container">
+          <Link to={`/auth?path=register`}>Don't have an account?</Link>
 
-          <label htmlFor="password">
-            <input
-              name="password"
-              type="password"
-              id="password"
-              value={this.state.password}
-              placeholder="Please enter your password"
-              onChange={this.handleChange}
-            />
-          </label>
-          <div className="links-container">
-            <Link to={`/auth?path=register`}>
-                Don't have an account?
-            </Link>
+          <Link to={`/auth?path=reset`}>Forgot password?</Link>
+        </div>
 
-            <Link to={`/auth?path=reset`}>
-                Forgot password?
-            </Link>
-            </div>
-
-          <button type="submit">Sign Up</button>
-        </fieldset>
-      </Form>
-    )
-  }
+        <button type="submit">Sign Up</button>
+      </fieldset>
+    </Form>
+  )
 }
 
-export default Signin
+export default SignIn

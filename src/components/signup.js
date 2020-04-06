@@ -1,17 +1,18 @@
 import React, { Component } from "react"
-import { Link } from "gatsby"
-import { userRegistration } from "../api"
+import { Link, mu } from "gatsby"
+import { userRegistration, googleAuth } from "../api"
+
+import { strapiRegister  } from "../lib/auth"
 
 import Form from "./styles/Form"
 
-
 const typeOfUser = [
-    { label: 'Participant', value: 'participant' },
-    { label: 'Organization', value: 'organization' }
-];
+  { label: "Participant", value: "participant" },
+  { label: "Organization", value: "organization" },
+]
 
 class Signup extends Component {
-  state = { email: "", password: "", username: "", type: "participant"  }
+  state = { email: "", password: "", username: "", type: "participant" }
 
   handleChange = e => {
     this.setState({ [e.target.name]: e.target.value })
@@ -19,11 +20,11 @@ class Signup extends Component {
 
   handleSubmit = e => {
     e.preventDefault()
-    userRegistration({
+    strapiRegister({
       username: this.state.username,
       email: this.state.email,
       password: this.state.password,
-      organization: this.state.type === 'organization' ? true : false
+      organization: this.state.type === "organization" ? true : false,
     })
   }
   render() {
@@ -65,24 +66,23 @@ class Signup extends Component {
           </label>
           <label htmlFor="type">
             <select
-                name="type"
-                type="number"
-                id="type"
-                value={this.state.type}
-                onChange={this.handleChange}
+              name="type"
+              type="number"
+              id="type"
+              value={this.state.type}
+              onChange={this.handleChange}
             >
-                {typeOfUser.map(user => (
+              {typeOfUser.map(user => (
                 <option value={user.value} label={user.label} />
-                ))}
+              ))}
             </select>
-        </label>
+          </label>
           <div className="links-container">
-            <Link to={'auth?path=login'}>
-              Already have an account?
-            </Link>
+            <Link to={"auth?path=login"}>Already have an account?</Link>
           </div>
 
           <button type="submit">Sign Up</button>
+          <button onClick={() => googleAuth()}>Google Auth</button>
         </fieldset>
       </Form>
     )
