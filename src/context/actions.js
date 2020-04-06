@@ -1,0 +1,2 @@
+const USER_LOGIN = 'USER_LOGIN';
+const SET_TOKEN = 'SET_TOKEN';

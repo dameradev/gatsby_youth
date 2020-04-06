@@ -42,7 +42,18 @@ module.exports = {
         display: "minimal-ui",
       },
     },
-    `gatsby-plugin-styled-components`,
+    {
+      resolve: `gatsby-plugin-styled-components`,
+      options: {
+        // Add any options here
+      },
+    },
+    {
+      resolve: 'gatsby-plugin-apollo',
+      options: {
+        uri: 'https://example.com/graphql'
+      }
+    },
     "gatsby-plugin-offline",
   ],
 }
