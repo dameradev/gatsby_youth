@@ -5,14 +5,32 @@
  * See: https://www.gatsbyjs.org/docs/use-static-query/
  */
 
-import React from "react"
+import React, { useEffect, useContext } from "react"
 import PropTypes from "prop-types"
 import { useStaticQuery, graphql } from "gatsby"
+
+import Cookies from "js-cookie";
 
 import Header from "./header"
 import "./layout.css"
 
-const Layout = ({ children }) => {
+import { checkUser } from "../api"
+
+import {
+  GlobalDispatchContext,
+  GlobalStateContext,
+} from "../context/GlobalContextProvider"
+
+
+import {SET_TOKEN, USER_LOGIN} from '../context/actions'
+
+import { getUserFromLocalCookie, getUserFromServerCookie } from "../lib/auth"
+
+const Layout = props => {
+
+  const dispatch = useContext(GlobalDispatchContext)
+  const state = useContext(GlobalStateContext)
+
   const data = useStaticQuery(graphql`
     query SiteTitleQuery {
       site {
@@ -22,6 +40,27 @@ const Layout = ({ children }) => {
       }
     }
   `)
+
+  useEffect(() => {
+    // Update the document title using the browser API
+    // const obj = {
+    //   token: Cookies.get('jwt'),
+      const userName = getUserFromLocalCookie()
+    // }
+
+    const token = Cookies.get('jwt');
+
+    checkUser(token);
+    
+    if (!state.userName && userName) {
+      dispatch({USER_LOGIN, payload: userName})
+    }
+
+    // if(!state.userName && obj.token && obj.userName) {
+      
+    // }
+
+  })
 
   return (
     <>
@@ -33,7 +72,7 @@ const Layout = ({ children }) => {
           padding: `0 1.0875rem 1.45rem`,
         }}
       >
-        <main>{children}</main>
+        <main>{props.children}</main>
         <footer>
           © {new Date().getFullYear()}, Built with
           {` `}
